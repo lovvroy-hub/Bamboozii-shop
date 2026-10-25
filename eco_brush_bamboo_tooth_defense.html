@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bamboozii | Brush & Save Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bamboozii-green: #1a3324;
+            --bamboozii-green-mid: #234230;
+            --bamboozii-cream: #f5f0e6;
+            --bamboozii-sand: #ebe3d5;
+            --bamboozii-gold: #c8a45d;
+            --bamboozii-bamboo: #d8ad78;
+        }
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 18%, #fbf9f4 0%, #f3ece0 55%, #e5dac7 100%);
+            color: #1a3324;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            touch-action: none;
+        }
+        .font-brand {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+        }
+        /* Luxury Bamboozii Card Styling */
+        .bamboozii-card {
+            background: linear-gradient(145deg, #fbf9f5 0%, #f2ebe0 100%);
+            border: 2px solid #d5c7b2;
+            box-shadow: 0 25px 50px -12px rgba(26, 51, 36, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+        .bamboozii-box-green {
+            background: linear-gradient(160deg, #234230 0%, #15291d 100%);
+            border: 1.5px solid rgba(200, 164, 93, 0.45);
+            box-shadow: 0 15px 30px rgba(15, 32, 22, 0.35);
+        }
+        .bamboozii-btn {
+            background: linear-gradient(to right, #1a3324, #264a34);
+            color: #f5f0e6;
+            border: 1.5px solid #c8a45d;
+            box-shadow: 0 8px 20px -4px rgba(26, 51, 36, 0.4);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .bamboozii-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(to right, #234230, #2e593f);
+            box-shadow: 0 12px 24px -4px rgba(26, 51, 36, 0.5);
+        }
+        .bamboozii-btn:active {
+            transform: translateY(1px);
+        }
+        #gameCanvas {
+            cursor: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* Pulse effect for low timer */
+        @keyframes urgentPulse {
+            0%, 100% { transform: scale(1); color: #dc2626; }
+            50% { transform: scale(1.1); color: #991b1b; }
+        }
+        .timer-urgent {
+            animation: urgentPulse 0.6s infinite;
+        }
+        /* Subtle float for product showcase */
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .product-float {
+            animation: gentleFloat 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="relative flex flex-col justify-between">
+
+    <!-- TOP BAMBOOZII BRAND & LIVE DISCOUNT HUD BAR -->
+    <header class="w-full z-20 px-3 pt-2.5 pb-1 pointer-events-none">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 bg-[#fbf9f4]/90 backdrop-blur-md border border-[#d5c7b2] rounded-2xl px-4 py-2 shadow-md pointer-events-auto">
+            
+            <!-- Bamboozii Official Logo & Tagline -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#1a3324] border border-[#c8a45d] flex items-center justify-center shadow-sm shrink-0">
+                    <!-- Bamboozii Double Leaf Emblem -->
+                    <svg class="w-6 h-6" viewBox="0 0 40 40" fill="none">
+                        <path d="M19 31C19 31 8 25 9 13C17 13 21 20 19 31Z" stroke="#d4af37" stroke-width="2" fill="rgba(212,175,55,0.15)" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 31C21 31 32 23 29 10C20 12 19 21 21 31Z" stroke="#d4af37" stroke-width="2" fill="rgba(212,175,55,0.15)" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19 31C19 24 14 18 11 15" stroke="#d4af37" stroke-width="1.4" stroke-linecap="round"/>
+                        <path d="M21 31C21 23 25 16 27 13" stroke="#d4af37" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-brand font-bold text-2xl text-[#1a3324] tracking-tight leading-none">Bamboozii</span>
+                        <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 bg-[#1a3324] text-[#d4af37] rounded-full">Signature</span>
+                    </div>
+                    <p class="text-[10px] tracking-widest uppercase text-[#5c6b5e] font-semibold hidden sm:block">Natural Care. Lasting Smiles.</p>
+                </div>
+            </div>
+
+            <!-- Central Telemetry: Cavities (20), Timer, Live Unlocked Discount -->
+            <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+                <!-- Cavities Counter (X / 20) -->
+                <div class="flex items-center gap-2 bg-[#f2ece1] border border-[#dcd0be] px-3 py-1.5 rounded-xl">
+                    <div class="w-7 h-7 rounded-lg bg-[#1a3324] text-[#d4af37] flex items-center justify-center font-bold text-sm shadow-sm">
+                        👾
+                    </div>
+                    <div>
+                        <div class="text-[9px] uppercase font-bold tracking-wider text-[#647066] leading-none">Cavities</div>
+                        <div class="font-bold text-sm sm:text-base text-[#1a3324] leading-tight">
+                            <span id="hudKilled">0</span><span class="text-[#889389]">/20</span>
+                            <span id="hudLeftBadge" class="text-[10px] font-medium text-[#5c6b5e] ml-0.5">(20 left)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Countdown Timer -->
+                <div class="flex items-center gap-2 bg-[#f2ece1] border border-[#dcd0be] px-3 py-1.5 rounded-xl">
+                    <div class="w-7 h-7 rounded-lg bg-[#234230] text-[#f5f0e6] flex items-center justify-center font-bold text-sm shadow-sm">
+                        ⏱️
+                    </div>
+                    <div>
+                        <div class="text-[9px] uppercase font-bold tracking-wider text-[#647066] leading-none">Time Left</div>
+                        <div id="hudTimer" class="font-bold text-sm sm:text-base text-[#1a3324] leading-tight">35.0s</div>
+                    </div>
+                </div>
+
+                <!-- LIVE SCORE-TO-DISCOUNT METER -->
+                <div class="flex flex-col w-40 sm:w-48 bg-[#1a3324] text-[#f5f0e6] px-3 py-1.5 rounded-xl border border-[#c8a45d]/60 shadow-sm">
+                    <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <span class="text-[#d4af37]">🎁 Reward Off</span>
+                        <span id="hudDiscountPct" class="text-emerald-300 font-extrabold text-xs">5% OFF (₹284)</span>
+                    </div>
+                    <div class="w-full h-2 bg-[#0f1f16] rounded-full overflow-hidden border border-[#c8a45d]/30">
+                        <div id="hudDiscountBar" class="h-full bg-gradient-to-r from-[#c8a45d] via-[#e6c875] to-emerald-400 transition-all duration-200" style="width: 16%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score, Smile Health & Audio Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Combo Pill -->
+                <div id="comboBadge" class="hidden md:flex items-center px-2.5 py-1 rounded-full bg-[#efe6d5] border border-[#c8a45d] text-[#1a3324] font-bold text-xs scale-95 opacity-60 transition-all">
+                    🌿 <span id="hudCombo">x1</span>
+                </div>
+
+                <!-- Score Box -->
+                <div class="bg-[#234230] text-[#f5f0e6] px-3.5 py-1.5 rounded-xl border border-[#c8a45d]/50 text-right min-w-[88px]">
+                    <div class="text-[9px] uppercase tracking-widest text-[#d4af37] font-bold leading-none">Score</div>
+                    <div id="hudScore" class="font-bold text-base sm:text-lg leading-tight text-white">0</div>
+                </div>
+
+                <!-- Mute Button -->
+                <button id="muteBtn" title="Toggle Sound" class="w-9 h-9 rounded-xl bg-[#efe6d5] hover:bg-[#e5d9c3] border border-[#cbbba2] flex items-center justify-center text-base transition active:scale-95">
+                    🔊
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN INTERACTIVE GAME CANVAS -->
+    <main class="relative flex-1 w-full h-full overflow-hidden">
+        <canvas id="gameCanvas"></canvas>
+    </main>
+
+    <!-- START MODAL OVERLAY (BAMBOOZII BRAND SHOWCASE) -->
+    <div id="startModal" class="fixed inset-0 z-30 flex items-center justify-center p-3 sm:p-4 bg-[#112218]/70 backdrop-blur-sm overflow-y-auto">
+        <div class="bamboozii-card max-w-3xl w-full rounded-3xl p-5 sm:p-8 relative overflow-hidden my-auto">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                
+                <!-- Left Column: Brand Story, 3 Eco Badges & Gameplay Rules -->
+                <div class="md:col-span-7 text-left">
+                    <!-- Brand Header -->
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <svg class="w-7 h-7" viewBox="0 0 40 40" fill="none">
+                            <path d="M19 33C19 33 7 26 8 13C17 13 21 21 19 33Z" stroke="#1a3324" stroke-width="2.2" fill="rgba(26,51,36,0.08)"/>
+                            <path d="M21 33C21 33 33 24 30 10C20 12 19 22 21 33Z" stroke="#1a3324" stroke-width="2.2" fill="rgba(26,51,36,0.08)"/>
+                        </svg>
+                        <div>
+                            <div class="font-brand font-bold text-3xl text-[#1a3324] leading-none">Bamboozii</div>
+                            <div class="text-[9px] tracking-[0.22em] uppercase text-[#4a5d4e] font-bold mt-0.5">Natural Care. Lasting Smiles.</div>
+                        </div>
+                    </div>
+
+                    <h1 class="font-brand text-3xl sm:text-4xl font-bold text-[#1a3324] leading-tight mt-2">
+                        A Cleaner Smile for a <span class="italic text-[#275337]">Greener Future.</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-[#435347] font-medium mt-1.5 mb-4">
+                        Play the <strong>Bamboozii Tooth Defense Challenge</strong>! Scrub away <strong>20 cavities</strong> using our signature charcoal-emerald bristle bamboo brush. <strong>Your final score converts directly into an instant discount (up to 30% OFF)</strong> on your Bamboozii toothbrush!
+                    </p>
+
+                    <!-- 3 Signature Circular Brand Badges from Poster -->
+                    <div class="grid grid-cols-3 gap-2 mb-4 py-2.5 px-3 bg-[#ebe3d5]/70 rounded-2xl border border-[#d6c8b4]">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full border border-[#1a3324] flex items-center justify-center shrink-0 bg-[#f5f0e6]">
+                                <svg class="w-4 h-4 text-[#1a3324]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-[#1a3324] leading-tight">100% Biodegradable</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full border border-[#1a3324] flex items-center justify-center shrink-0 bg-[#f5f0e6]">
+                                <svg class="w-4 h-4 text-[#1a3324]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-[#1a3324] leading-tight">Plastic-Free Packaging</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full border border-[#1a3324] flex items-center justify-center shrink-0 bg-[#f5f0e6]">
+                                <svg class="w-4 h-4 text-[#1a3324]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                            </div>
+                            <span class="text-[10px] font-bold text-[#1a3324] leading-tight">Gentle on Gums</span>
+                        </div>
+                    </div>
+
+                    <!-- Score-to-Discount Tiers Preview -->
+                    <div class="bg-[#1a3324] text-[#f5f0e6] rounded-2xl p-3 mb-4 border border-[#c8a45d]/50">
+                        <div class="flex items-center justify-between text-[11px] font-bold text-[#d4af37] uppercase tracking-wider mb-1.5">
+                            <span>🎯 Score-to-Discount Tiers</span>
+                            <span>MRP ₹299</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="bg-[#234230] rounded-xl p-1.5 border border-white/10">
+                                <div class="text-[#d4af37] font-bold">1,000+ Pts</div>
+                                <div class="font-extrabold text-white">15% OFF</div>
+                                <div class="text-[10px] text-emerald-300">Pay ₹254</div>
+                            </div>
+                            <div class="bg-[#234230] rounded-xl p-1.5 border border-white/10">
+                                <div class="text-[#d4af37] font-bold">2,200+ Pts</div>
+                                <div class="font-extrabold text-white">25% OFF</div>
+                                <div class="text-[10px] text-emerald-300">Pay ₹224</div>
+                            </div>
+                            <div class="bg-[#294f39] rounded-xl p-1.5 border border-[#c8a45d]">
+                                <div class="text-[#fde047] font-bold">3,200+ Pts</div>
+                                <div class="font-extrabold text-emerald-300">30% OFF</div>
+                                <div class="text-[10px] text-white">Pay ₹209!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="startGameBtn" class="bamboozii-btn w-full py-3.5 px-6 rounded-full font-bold text-base tracking-wider uppercase flex items-center justify-center gap-3 cursor-pointer">
+                        <span>BRUSH 20 CAVITIES & UNLOCK DISCOUNT</span>
+                        <span class="text-xl leading-none">→</span>
+                    </button>
+                </div>
+
+                <!-- Right Column: Realistic Vector Illustration of Bamboozii Brush & Signature Box -->
+                <div class="md:col-span-5 flex flex-col items-center justify-center bg-gradient-to-b from-[#e9e0d1] to-[#dfd3be] rounded-2xl p-4 border border-[#cbbba2] relative overflow-hidden">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-[#5a6b5c] mb-1">Official Product Preview</div>
+                    
+                    <!-- Bamboozii Product Twin Render (Toothbrush + Signature Box) -->
+                    <svg class="w-48 h-64 product-float drop-shadow-xl" viewBox="0 0 220 280" fill="none">
+                        <!-- Ceramic Holder Cup Behind -->
+                        <rect x="22" y="168" width="68" height="88" rx="10" fill="#e6dec8" stroke="#cbbba2" stroke-width="2"/>
+                        <ellipse cx="56" cy="168" rx="34" ry="7" fill="#d5c8b0" stroke="#bba88b" stroke-width="1.5"/>
+
+                        <!-- BAMBOOZII SIGNATURE PACKAGING BOX -->
+                        <g transform="translate(96, 22)">
+                            <!-- Side 3D panel -->
+                            <polygon points="88,0 102,8 102,238 88,232" fill="#122419"/>
+                            <!-- Front Matte Green Box -->
+                            <rect x="0" y="0" width="88" height="232" rx="3" fill="#1c3626" stroke="#c8a45d" stroke-width="1.2"/>
+                            <!-- Gold Double Leaf Logo -->
+                            <path d="M43 44C43 44 35 39 36 30C42 30 44 36 43 44Z" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+                            <path d="M45 44C45 44 53 38 51 28C44 30 43 37 45 44Z" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+                            <!-- Bamboozii Gold Title -->
+                            <text x="44" y="60" text-anchor="middle" fill="#e5c478" font-family="Cormorant Garamond, serif" font-weight="700" font-size="16">Bamboozii</text>
+                            <text x="44" y="72" text-anchor="middle" fill="#c8a45d" font-family="Plus Jakarta Sans, sans-serif" font-size="5.5" letter-spacing="2">SIGNATURE</text>
+                            
+                            <text x="44" y="102" text-anchor="middle" fill="#d4af37" font-family="Plus Jakarta Sans, sans-serif" font-size="5" letter-spacing="1.5">BAMBOO</text>
+                            <text x="44" y="111" text-anchor="middle" fill="#d4af37" font-family="Plus Jakarta Sans, sans-serif" font-size="5.5" letter-spacing="1.5">TOOTHBRUSH</text>
+                            <line x1="30" y1="120" x2="58" y2="120" stroke="#c8a45d" stroke-width="0.8"/>
+
+                            <text x="44" y="134" text-anchor="middle" fill="#b8c4b9" font-family="Plus Jakarta Sans, sans-serif" font-size="4.5" letter-spacing="1">NATURAL CARE</text>
+                            <text x="44" y="142" text-anchor="middle" fill="#b8c4b9" font-family="Plus Jakarta Sans, sans-serif" font-size="4.5" letter-spacing="1">FOR A GREENER</text>
+                            <text x="44" y="150" text-anchor="middle" fill="#b8c4b9" font-family="Plus Jakarta Sans, sans-serif" font-size="4.5" letter-spacing="1">TOMORROW</text>
+
+                            <!-- Gold Botanical Leaves Illustration at Bottom of Box -->
+                            <path d="M22 230 C28 200, 42 180, 58 162" stroke="#c8a45d" stroke-width="1.1" fill="none"/>
+                            <path d="M34 205 C26 198, 22 186, 28 178 C34 184, 36 196, 34 205Z" stroke="#c8a45d" stroke-width="1" fill="rgba(200,164,93,0.12)"/>
+                            <path d="M44 188 C40 178, 42 166, 50 162 C52 170, 49 182, 44 188Z" stroke="#c8a45d" stroke-width="1" fill="rgba(200,164,93,0.12)"/>
+                            <path d="M38 212 C48 208, 58 212, 62 220 C52 222, 44 218, 38 212Z" stroke="#c8a45d" stroke-width="1" fill="rgba(200,164,93,0.12)"/>
+                        </g>
+
+                        <!-- BAMBOOZII WOODEN TOOTHBRUSH WITH DARK FOREST GREEN BRISTLES -->
+                        <g transform="translate(52, 16)">
+                            <!-- Deep Forest Green Bristles Profile -->
+                            <rect x="2" y="12" width="13" height="36" rx="4" fill="#0d291a" stroke="#1b432c" stroke-width="1"/>
+                            <line x1="2" y1="20" x2="15" y2="20" stroke="#235338" stroke-width="1.5"/>
+                            <line x1="2" y1="28" x2="15" y2="28" stroke="#235338" stroke-width="1.5"/>
+                            <line x1="2" y1="36" x2="15" y2="36" stroke="#235338" stroke-width="1.5"/>
+                            
+                            <!-- Sculpted Ergonomic Bamboo Handle -->
+                            <path d="M12 8 C17 8, 20 12, 20 20 L19 52 C19 68, 15 82, 16 105 C17 132, 22 158, 21 195 C20 220, 17 238, 12 242 C7 238, 5 220, 5 195 C4 158, 9 132, 10 105 C11 82, 11 68, 11 52 L10 20 C10 12, 10 8, 12 8 Z" fill="#d7ac77" stroke="#8c5e2a" stroke-width="1.2"/>
+                            
+                            <!-- Vertical Engraved Bamboozii Logo on Handle -->
+                            <g transform="translate(14, 185) rotate(-90)">
+                                <text x="0" y="0" fill="#5e3a13" font-family="Cormorant Garamond, serif" font-weight="700" font-size="11" letter-spacing="0.5">Bamboozii</text>
+                            </g>
+                        </g>
+                    </svg>
+
+                    <div class="text-center mt-1">
+                        <span class="text-[11px] font-bold text-[#1a3324] bg-[#f5f0e6] px-3 py-1 rounded-full border border-[#cbbba2] shadow-sm">
+                            🪥 Click or Scrub over cavities to play!
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME OVER / BAMBOOZII DISCOUNT REWARD MODAL -->
+    <div id="resultModal" class="fixed inset-0 z-30 hidden items-center justify-center p-3 sm:p-4 bg-[#112218]/75 backdrop-blur-sm overflow-y-auto">
+        <div class="bamboozii-card max-w-xl w-full rounded-3xl p-5 sm:p-7 text-center relative my-auto">
+            
+            <!-- Top Badge -->
+            <div id="resultBadge" class="inline-block px-4 py-1 rounded-full bg-[#1a3324] text-[#d4af37] font-bold text-[10px] uppercase tracking-widest mb-2 border border-[#c8a45d]">
+                Bamboozii Eco-Reward Unlocked
+            </div>
+
+            <h2 id="resultTitle" class="font-brand font-bold text-3xl sm:text-4xl text-[#1a3324] leading-none mb-1">
+                A Cleaner Smile Unlocked!
+            </h2>
+            <p id="resultSubtitle" class="text-xs sm:text-sm text-[#4a5d4e] font-medium mb-4">
+                Your brushing performance earned you an exclusive discount on Bamboozii!
+            </p>
+
+            <!-- LUXURY BAMBOOZII VOUCHER & PRICE CALCULATOR CARD -->
+            <div class="bamboozii-box-green rounded-2xl p-4 sm:p-5 text-left text-[#f5f0e6] mb-4 relative overflow-hidden">
+                <!-- Pack Selector Toggle (Single vs Family Pack of 4) -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-[#c8a45d]/30">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Select Your Bamboozii Pack</div>
+                        <div class="font-brand text-xl font-bold text-white" id="selectedProductTitle">Bamboozii Signature Brush (1 Pack)</div>
+                    </div>
+                    <div class="flex bg-[#122419] p-1 rounded-xl border border-[#c8a45d]/40 text-xs font-bold">
+                        <button id="packSingleBtn" class="px-3 py-1 rounded-lg bg-[#c8a45d] text-[#1a3324] transition">Single (₹299)</button>
+                        <button id="packFamilyBtn" class="px-3 py-1 rounded-lg text-[#d4af37] hover:text-white transition">Pack of 4 (₹999)</button>
+                    </div>
+                </div>
+
+                <!-- Discount Percentage & Final Price Display -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold mb-1">
+                            <span>🎉 Score Discount:</span>
+                            <span id="voucherPctText">30% OFF</span>
+                        </div>
+                        <div class="flex items-baseline gap-2.5 mt-1">
+                            <span id="voucherFinalPrice" class="font-extrabold text-3xl sm:text-4xl text-[#fde047]">₹209</span>
+                            <span id="voucherOriginalPrice" class="text-sm text-slate-400 line-through font-semibold">MRP ₹299</span>
+                            <span id="voucherSavedBadge" class="text-xs font-bold text-emerald-300">Save ₹90</span>
+                        </div>
+                        <p class="text-[11px] text-[#b8c4b9] mt-1">100% Biodegradable • Charcoal-Emerald Soft Bristles</p>
+                    </div>
+
+                    <!-- Promo Code Box with Copy Button -->
+                    <div class="bg-[#122419] border border-dashed border-[#c8a45d] rounded-xl p-3 flex flex-col justify-between">
+                        <div class="text-[10px] uppercase tracking-wider text-[#d4af37] font-semibold mb-1">Your Promo Code:</div>
+                        <div class="flex items-center justify-between gap-2">
+                            <code id="voucherCode" class="font-mono font-extrabold text-base sm:text-lg text-white tracking-wider">BAMBOOZII30</code>
+                            <button id="copyCodeBtn" class="px-3 py-1.5 rounded-lg bg-[#c8a45d] hover:bg-[#dfbc70] text-[#1a3324] font-bold text-xs transition shrink-0 cursor-pointer">
+                                Copy Code
+                            </button>
+                        </div>
+                        <div id="copyConfirmMsg" class="text-[10px] text-emerald-400 font-semibold mt-1 hidden">✓ Copied to clipboard!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Breakdown Summary -->
+            <div class="bg-[#ebe3d5]/80 rounded-2xl p-3.5 border border-[#cbbba2] text-left grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 text-xs">
+                <div class="bg-[#fbf9f5] p-2 rounded-xl border border-[#dcd0be]">
+                    <div class="text-[10px] text-[#5c6b5e] font-bold uppercase">Cavities Killed</div>
+                    <div id="resCavities" class="font-extrabold text-sm text-[#1a3324]">20 / 20</div>
+                </div>
+                <div class="bg-[#fbf9f5] p-2 rounded-xl border border-[#dcd0be]">
+                    <div class="text-[10px] text-[#5c6b5e] font-bold uppercase">Brushing Score</div>
+                    <div id="resCombatScore" class="font-extrabold text-sm text-[#1a3324]">2,400</div>
+                </div>
+                <div class="bg-[#fbf9f5] p-2 rounded-xl border border-[#dcd0be]">
+                    <div class="text-[10px] text-[#5c6b5e] font-bold uppercase">Time + Health</div>
+                    <div id="resBonuses" class="font-extrabold text-sm text-emerald-700">+950</div>
+                </div>
+                <div class="bg-[#1a3324] p-2 rounded-xl text-white">
+                    <div class="text-[10px] text-[#d4af37] font-bold uppercase">Total Score</div>
+                    <div id="resTotalScore" class="font-extrabold text-sm text-[#fde047]">3,350</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons: Shop Now with Discount OR Play Again -->
+            <div class="flex flex-col sm:flex-row gap-2.5">
+                <button id="claimOrderBtn" class="bamboozii-btn flex-1 py-3.5 px-5 rounded-full font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer">
+                    <span>SHOP NOW WITH DISCOUNT</span>
+                    <span>→</span>
+                </button>
+                <button id="playAgainBtn" class="py-3.5 px-5 rounded-full bg-[#ebe3d5] hover:bg-[#dfd3be] text-[#1a3324] border border-[#b8a68e] font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                    🔄 Brush Again for Higher %
+                </button>
+            </div>
+
+            <!-- Instant Order Confirmation Banner (Hidden until Shop Now clicked) -->
+            <div id="checkoutToast" class="hidden mt-3 p-3 rounded-xl bg-emerald-900 text-emerald-100 text-xs font-semibold border border-emerald-500">
+                🌿 <strong>Discount Applied!</strong> Your <span id="toastPackName">Bamboozii Signature Brush</span> at <span id="toastFinalPrice" class="underline font-bold text-amber-300">₹209</span> (Code: <span id="toastCode" class="font-mono">BAMBOOZII30</span>) is ready in your Bamboozii Eco-Cart!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**************************************************************
+         * WEB AUDIO SYNTHESIZER (No external audio files needed)
+         **************************************************************/
+        class SoundEffects {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            toggleMute() {
+                this.muted = !this.muted;
+                return this.muted;
+            }
+
+            // Crisp toothbrush scrub noise burst
+            playScrub() {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const duration = 0.075;
+                    const bufferSize = this.ctx.sampleRate * duration;
+                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+                    }
+
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.setValueAtTime(1900 + Math.random() * 600, this.ctx.currentTime);
+                    filter.Q.setValueAtTime(2.0, this.ctx.currentTime);
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    noise.start();
+                } catch (e) {}
+            }
+
+            // Bubbly pop sound when a cavity is defeated
+            playPop(combo = 1) {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+
+                    const baseFreq = Math.min(360 + combo * 45, 880);
+                    osc.frequency.setValueAtTime(baseFreq, now);
+                    osc.frequency.exponentialRampToValueAtTime(baseFreq * 2.1, now + 0.14);
+
+                    gain.gain.setValueAtTime(0.22, now);
+                    gain.gain.exponentialRampToValueAtTime(0.005, now + 0.15);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } catch (e) {}
+            }
+
+            // Sparkle chime when polishing a tooth
+            playSparkle() {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const now = this.ctx.currentTime;
+                    const notes = [1046.5, 1318.5, 1567.98];
+                    notes.forEach((freq, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+                        gain.gain.setValueAtTime(0.08, now + idx * 0.04);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.18);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now + idx * 0.04);
+                        osc.stop(now + idx * 0.04 + 0.19);
+                    });
+                } catch (e) {}
+            }
+
+            // Spawn boing sound
+            playSpawn() {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(330, now + 0.09);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.005, now + 0.1);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } catch (e) {}
+            }
+
+            // End of game fanfare
+            playFanfare(win = true) {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const now = this.ctx.currentTime;
+                    const melody = win ? [523.25, 659.25, 783.99, 1046.5] : [392.0, 349.23, 329.63, 261.63];
+                    melody.forEach((freq, i) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.11);
+                        gain.gain.setValueAtTime(0.18, now + i * 0.11);
+                        gain.gain.exponentialRampToValueAtTime(0.005, now + i * 0.11 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now + i * 0.11);
+                        osc.stop(now + i * 0.11 + 0.36);
+                    });
+                } catch (e) {}
+            }
+        }
+
+        /**************************************************************
+         * GAME CONSTANTS & STATE
+         **************************************************************/
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const sfx = new SoundEffects();
+
+        const MAX_CAVITIES = 20;
+        const GAME_DURATION = 35; // 35 seconds time-based round
+        const BASE_PRICES = {
+            single: { title: 'Bamboozii Signature Brush (1 Pack)', mrp: 299 },
+            family: { title: 'Bamboozii Family Eco-Pack (4 Brushes)', mrp: 999 }
+        };
+        let selectedPackKey = 'single';
+        let lastUnlockedDiscountPct = 5;
+
+        // Calculate Discount Percentage (5% to 30% OFF) from score
+        function calculateDiscountFromScore(scoreValue, cavitiesKilled = 0) {
+            // Base 5% just for playing, scales up to 30% OFF at 3,200+ points (or all 20 cavities + good speed)
+            const rawPct = 5 + Math.floor((scoreValue / 3200) * 25);
+            const bonusForAll20 = cavitiesKilled === MAX_CAVITIES ? 3 : 0;
+            return Math.max(5, Math.min(30, rawPct + bonusForAll20));
+        }
+
+        function getPromoCodeForDiscount(pct) {
+            if (pct >= 28) return `BAMBOOZII30`;
+            if (pct >= 22) return `GREENSAVIOR${pct}`;
+            if (pct >= 15) return `ECOSMILE${pct}`;
+            return `NATURALCARE${pct}`;
+        }
+
+        // Cavity Enemy Definitions
+        const CAVITY_TYPES = [
+            {
+                id: 'sugar',
+                name: 'Sugar Sprite',
+                maxHp: 1,
+                points: 100,
+                color: '#a855f7',
+                darkColor: '#6b21a8',
+                accent: '#f0abfc',
+                radius: 26,
+                stainRate: 6
+            },
+            {
+                id: 'acid',
+                name: 'Acid Slime',
+                maxHp: 2,
+                points: 150,
+                color: '#84cc16',
+                darkColor: '#3f6212',
+                accent: '#d9f99d',
+                radius: 30,
+                stainRate: 9
+            },
+            {
+                id: 'caramel',
+                name: 'Caramel King',
+                maxHp: 3,
+                points: 250,
+                color: '#f59e0b',
+                darkColor: '#92400e',
+                accent: '#fde68a',
+                radius: 34,
+                stainRate: 12
+            }
+        ];
+
+        let state = {
+            status: 'START', // 'START', 'PLAYING', 'ENDED'
+            timeLeft: GAME_DURATION,
+            score: 0,
+            spawnedCount: 0,
+            killedCount: 0,
+            resolvedCount: 0,
+            combo: 1,
+            comboTimer: 0,
+            spawnCooldown: 0.5,
+            teeth: [],
+            cavities: [],
+            particles: [],
+            floatingTexts: [],
+            bgBubbles: [],
+            pointer: {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2,
+                prevX: window.innerWidth / 2,
+                prevY: window.innerHeight / 2,
+                isDown: false,
+                scrubAngle: 0,
+                bristleFlex: 0,
+                distanceAccumulator: 0
+            }
+        };
+
+        // Initialize ambient background bubbles
+        for (let i = 0; i < 18; i++) {
+            state.bgBubbles.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                r: 8 + Math.random() * 28,
+                vy: 12 + Math.random() * 25,
+                wobble: Math.random() * Math.PI * 2
+            });
+        }
+
+        /**************************************************************
+         * RESPONSIVE MOUTH & 16 TEETH GEOMETRY SETUP
+         **************************************************************/
+        let mouthMetrics = { cx: 0, cy: 0, rx: 0, ry: 0 };
+
+        function setupMouthLayout() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            mouthMetrics.cx = w / 2;
+            mouthMetrics.cy = h * 0.52;
+            mouthMetrics.rx = Math.min(w * 0.43, 410);
+            mouthMetrics.ry = Math.min(h * 0.36, 235);
+
+            // Preserve health if resizing mid-game
+            const oldHealth = state.teeth.map(t => ({ health: t.health, shine: t.shine }));
+            state.teeth = [];
+
+            const archCols = 8; // 8 upper teeth + 8 lower teeth = 16 teeth
+            const spanX = mouthMetrics.rx * 1.48;
+            const startX = mouthMetrics.cx - spanX / 2;
+            const stepX = spanX / (archCols - 1);
+            const toothW = Math.min(stepX * 0.88, 66);
+            const toothH = Math.min(mouthMetrics.ry * 0.37, 74);
+
+            // Upper Arch (0..7)
+            for (let i = 0; i < archCols; i++) {
+                const norm = (i - (archCols - 1) / 2) / ((archCols - 1) / 2); // -1 to 1
+                const x = startX + i * stepX;
+                const curveOffset = Math.pow(norm, 2) * (mouthMetrics.ry * 0.22);
+                const y = (mouthMetrics.cy - mouthMetrics.ry * 0.44) + curveOffset;
+                // Central incisors slightly larger
+                const sizeFactor = 1 - Math.abs(norm) * 0.16;
+                state.teeth.push({
+                    id: i,
+                    row: 'upper',
+                    x,
+                    y,
+                    w: toothW * sizeFactor,
+                    h: toothH * sizeFactor,
+                    health: oldHealth[i] ? oldHealth[i].health : 100,
+                    shine: oldHealth[i] ? oldHealth[i].shine : 0
+                });
+            }
+
+            // Lower Arch (8..15)
+            for (let i = 0; i < archCols; i++) {
+                const idx = i + archCols;
+                const norm = (i - (archCols - 1) / 2) / ((archCols - 1) / 2);
+                const x = startX + i * stepX;
+                const curveOffset = Math.pow(norm, 2) * (mouthMetrics.ry * 0.22);
+                const y = (mouthMetrics.cy + mouthMetrics.ry * 0.44) - curveOffset;
+                const sizeFactor = (1 - Math.abs(norm) * 0.15) * 0.94;
+                state.teeth.push({
+                    id: idx,
+                    row: 'lower',
+                    x,
+                    y,
+                    w: toothW * sizeFactor,
+                    h: toothH * sizeFactor,
+                    health: oldHealth[idx] ? oldHealth[idx].health : 100,
+                    shine: oldHealth[idx] ? oldHealth[idx].shine : 0
+                });
+            }
+
+            // Reposition active cavities onto their anchored tooth
+            state.cavities.forEach(c => {
+                const t = state.teeth[c.toothId];
+                if (t) {
+                    c.x = t.x + c.offsetX;
+                    c.y = t.y + c.offsetY;
+                }
+            });
+        }
+
+        window.addEventListener('resize', setupMouthLayout);
+
+        /**************************************************************
+         * CAVITY SPAWNING & COMBAT LOGIC
+         **************************************************************/
+        function buildCavityDeck() {
+            // Exactly 20 cavities with a balanced mix:
+            // 10 Sugar Sprites (1HP), 6 Acid Slimes (2HP), 4 Caramel Kings (3HP)
+            const deck = [];
+            for (let i = 0; i < 10; i++) deck.push(CAVITY_TYPES[0]);
+            for (let i = 0; i < 6; i++) deck.push(CAVITY_TYPES[1]);
+            for (let i = 0; i < 4; i++) deck.push(CAVITY_TYPES[2]);
+
+            // Shuffle deck, keeping first 2 spawns easy
+            for (let i = deck.length - 1; i > 2; i--) {
+                const j = 2 + Math.floor(Math.random() * (i - 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        let cavityDeck = [];
+
+        function spawnNextCavity() {
+            if (state.spawnedCount >= MAX_CAVITIES) return;
+
+            // Find teeth without an active cavity
+            const occupiedIds = new Set(state.cavities.map(c => c.toothId));
+            const availableTeeth = state.teeth.filter(t => !occupiedIds.has(t.id));
+            if (availableTeeth.length === 0) return;
+
+            const chosenTooth = availableTeeth[Math.floor(Math.random() * availableTeeth.length)];
+            const template = cavityDeck[state.spawnedCount] || CAVITY_TYPES[0];
+
+            const offsetX = (Math.random() - 0.5) * (chosenTooth.w * 0.25);
+            const offsetY = (Math.random() - 0.5) * (chosenTooth.h * 0.22);
+
+            state.cavities.push({
+                uid: Math.random().toString(36).slice(2),
+                toothId: chosenTooth.id,
+                type: template,
+                hp: template.maxHp,
+                maxHp: template.maxHp,
+                x: chosenTooth.x + offsetX,
+                y: chosenTooth.y + offsetY,
+                offsetX,
+                offsetY,
+                scale: 0.1,
+                hitFlash: 0,
+                hitCooldown: 0,
+                wobblePhase: Math.random() * Math.PI * 2,
+                chewParticlesTimer: 0
+            });
+
+            state.spawnedCount++;
+            sfx.playSpawn();
+            updateHUD();
+        }
+
+        // Trigger a brush stroke at (bx, by)
+        function applyBrushStroke(bx, by, isClick = false) {
+            if (state.status !== 'PLAYING') return;
+
+            // Create minty toothpaste foam bubbles along the brush bristles
+            spawnFoamParticles(bx, by, isClick ? 7 : 4);
+            state.pointer.bristleFlex = isClick ? 1.0 : 0.75;
+
+            let hitSomething = false;
+
+            // 1. Check collision against active cavities
+            for (let i = state.cavities.length - 1; i >= 0; i--) {
+                const cav = state.cavities[i];
+                if (cav.hitCooldown > 0) continue;
+
+                const dist = Math.hypot(bx - cav.x, by - cav.y);
+                const hitRadius = cav.type.radius + 26;
+
+                if (dist <= hitRadius) {
+                    hitSomething = true;
+                    cav.hp -= 1;
+                    cav.hitFlash = 1.0;
+                    cav.hitCooldown = isClick ? 0.08 : 0.16; // Prevent instant multi-frame drain on 1 swipe
+                    sfx.playScrub();
+
+                    // Extra foam burst on contact
+                    spawnFoamParticles(cav.x, cav.y, 10, cav.type.accent);
+
+                    if (cav.hp <= 0) {
+                        // Cavity Defeated!
+                        defeatCavity(i);
+                    } else {
+                        // Damaged feedback
+                        addFloatingText(cav.x, cav.y - 20, 'SCRUB!', '#ffffff', 16);
+                    }
+                    break; // Hit top cavity under brush
+                }
+            }
+
+            // 2. Also polish stained teeth under the bamboo brush!
+            state.teeth.forEach(t => {
+                const dist = Math.hypot(bx - t.x, by - t.y);
+                if (dist < Math.max(t.w, t.h) * 0.65 && t.health < 100) {
+                    t.health = Math.min(100, t.health + (isClick ? 8 : 5));
+                    t.shine = 1.0;
+                    if (!hitSomething && Math.random() < 0.35) {
+                        sfx.playScrub();
+                    }
+                }
+            });
+        }
+
+        function defeatCavity(index) {
+            const cav = state.cavities[index];
+            const tooth = state.teeth[cav.toothId];
+
+            // Restore tooth cleanliness when its cavity is brushed away
+            if (tooth) {
+                tooth.health = Math.min(100, tooth.health + 22);
+                tooth.shine = 1.0;
+            }
+
+            // Combo calculation
+            if (state.comboTimer > 0) {
+                state.combo = Math.min(5, state.combo + 1);
+            } else {
+                state.combo = 1;
+            }
+            state.comboTimer = 2.6; // 2.6 seconds window to keep Minty Combo alive
+
+            const earnedPoints = cav.type.points * state.combo;
+            state.score += earnedPoints;
+            state.killedCount++;
+            state.resolvedCount++;
+
+            // Sound & visual celebration
+            sfx.playPop(state.combo);
+            if (state.combo >= 2) sfx.playSparkle();
+
+            spawnSparkleBurst(cav.x, cav.y, cav.type.color);
+            addFloatingText(
+                cav.x,
+                cav.y - 12,
+                `+${earnedPoints}`,
+                state.combo > 1 ? '#fde047' : '#5eead4',
+                state.combo > 1 ? 24 : 20
+            );
+
+            if (state.combo >= 2) {
+                addFloatingText(
+                    cav.x,
+                    cav.y - 38,
+                    `MINTY x${state.combo}!`,
+                    '#ffffff',
+                    15
+                );
+            }
+
+            state.cavities.splice(index, 1);
+            updateHUD();
+
+            // Check if all 20 cavities have been defeated!
+            if (state.resolvedCount >= MAX_CAVITIES && state.cavities.length === 0) {
+                setTimeout(() => endGame(true), 350);
+            }
+        }
+
+        /**************************************************************
+         * PARTICLE & FLOATING TEXT EFFECTS
+         **************************************************************/
+        function spawnFoamParticles(x, y, count, tint = '#ffffff') {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 25 + Math.random() * 95;
+                state.particles.push({
+                    kind: 'foam',
+                    x: x + (Math.random() - 0.5) * 20,
+                    y: y + (Math.random() - 0.5) * 20,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 20,
+                    r: 4 + Math.random() * 9,
+                    life: 0.45 + Math.random() * 0.35,
+                    maxLife: 0.8,
+                    color: Math.random() > 0.35 ? '#ffffff' : (tint || '#99f6e4')
+                });
+            }
+        }
+
+        function spawnSparkleBurst(x, y, enemyColor) {
+            for (let i = 0; i < 16; i++) {
+                const angle = (Math.PI * 2 * i) / 16 + Math.random() * 0.2;
+                const speed = 60 + Math.random() * 140;
+                state.particles.push({
+                    kind: i % 2 === 0 ? 'star' : 'foam',
+                    x,
+                    y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    r: 6 + Math.random() * 7,
+                    life: 0.65 + Math.random() * 0.25,
+                    maxLife: 0.9,
+                    color: i % 3 === 0 ? '#fef08a' : (i % 2 === 0 ? '#5eead4' : enemyColor)
+                });
+            }
+        }
+
+        function addFloatingText(x, y, text, color = '#ffffff', size = 20) {
+            state.floatingTexts.push({
+                x,
+                y,
+                text,
+                color,
+                size,
+                life: 0.85,
+                maxLife: 0.85
+            });
+        }
+
+        /**************************************************************
+         * INPUT HANDLERS (MOUSE + TOUCH SCRUBBING)
+         **************************************************************/
+        function handlePointerMove(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            const nx = clientX - rect.left;
+            const ny = clientY - rect.top;
+
+            const dx = nx - state.pointer.x;
+            const dy = ny - state.pointer.y;
+            const stepDist = Math.hypot(dx, dy);
+
+            state.pointer.prevX = state.pointer.x;
+            state.pointer.prevY = state.pointer.y;
+            state.pointer.x = nx;
+            state.pointer.y = ny;
+
+            // Slight tilt angle based on horizontal velocity
+            state.pointer.scrubAngle = Math.max(-0.35, Math.min(0.35, dx * 0.015));
+
+            if (state.status === 'PLAYING') {
+                state.pointer.distanceAccumulator += stepDist;
+                // Every 26px of scrubbing movement triggers an active brush stroke
+                if (state.pointer.distanceAccumulator >= 26) {
+                    state.pointer.distanceAccumulator = 0;
+                    applyBrushStroke(nx, ny, false);
+                }
+            }
+        }
+
+        canvas.addEventListener('mousemove', e => {
+            handlePointerMove(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mousedown', e => {
+            sfx.init();
+            state.pointer.isDown = true;
+            handlePointerMove(e.clientX, e.clientY);
+            applyBrushStroke(state.pointer.x, state.pointer.y, true);
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.pointer.isDown = false;
+        });
+
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            sfx.init();
+            state.pointer.isDown = true;
+            const touch = e.touches[0];
+            if (touch) {
+                state.pointer.x = touch.clientX - canvas.getBoundingClientRect().left;
+                state.pointer.y = touch.clientY - canvas.getBoundingClientRect().top;
+                applyBrushStroke(state.pointer.x, state.pointer.y, true);
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            if (touch) {
+                handlePointerMove(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', () => {
+            state.pointer.isDown = false;
+        });
+
+        /**************************************************************
+         * HUD & GAME FLOW MANAGEMENT
+         **************************************************************/
+        const hudKilledEl = document.getElementById('hudKilled');
+        const hudLeftBadgeEl = document.getElementById('hudLeftBadge');
+        const hudTimerEl = document.getElementById('hudTimer');
+        const hudScoreEl = document.getElementById('hudScore');
+        const hudComboEl = document.getElementById('hudCombo');
+        const comboBadgeEl = document.getElementById('comboBadge');
+        const hudDiscountPctEl = document.getElementById('hudDiscountPct');
+        const hudDiscountBarEl = document.getElementById('hudDiscountBar');
+
+        function getAverageToothHealth() {
+            if (state.teeth.length === 0) return 100;
+            const total = state.teeth.reduce((acc, t) => acc + t.health, 0);
+            return Math.round(total / state.teeth.length);
+        }
+
+        function updateHUD() {
+            hudKilledEl.textContent = state.killedCount;
+            const unspawnedOrActive = MAX_CAVITIES - state.killedCount;
+            hudLeftBadgeEl.textContent = `(${unspawnedOrActive} left)`;
+            hudScoreEl.textContent = state.score.toLocaleString();
+
+            // Combo indicator
+            hudComboEl.textContent = `x${state.combo}`;
+            if (state.combo > 1) {
+                comboBadgeEl.className = 'hidden md:flex items-center px-3 py-1 rounded-full bg-[#1a3324] border border-[#c8a45d] text-[#fde047] font-bold text-xs scale-105 shadow transition-all';
+            } else {
+                comboBadgeEl.className = 'hidden md:flex items-center px-2.5 py-1 rounded-full bg-[#efe6d5] border border-[#c8a45d] text-[#1a3324] font-bold text-xs scale-95 opacity-60 transition-all';
+            }
+
+            // Live Score-to-Discount calculation
+            const liveDiscount = calculateDiscountFromScore(state.score, state.killedCount);
+            const livePrice = Math.round(BASE_PRICES.single.mrp * (1 - liveDiscount / 100));
+            hudDiscountPctEl.textContent = `${liveDiscount}% OFF (₹${livePrice})`;
+            hudDiscountBarEl.style.width = `${Math.round((liveDiscount / 30) * 100)}%`;
+        }
+
+        function renderVoucherCardPricing() {
+            const pack = BASE_PRICES[selectedPackKey];
+            const finalPrice = Math.round(pack.mrp * (1 - lastUnlockedDiscountPct / 100));
+            const saved = pack.mrp - finalPrice;
+            const code = getPromoCodeForDiscount(lastUnlockedDiscountPct);
+
+            document.getElementById('selectedProductTitle').textContent = pack.title;
+            document.getElementById('voucherPctText').textContent = `${lastUnlockedDiscountPct}% OFF`;
+            document.getElementById('voucherFinalPrice').textContent = `₹${finalPrice}`;
+            document.getElementById('voucherOriginalPrice').textContent = `MRP ₹${pack.mrp}`;
+            document.getElementById('voucherSavedBadge').textContent = `Save ₹${saved}`;
+            document.getElementById('voucherCode').textContent = code;
+
+            // Update active button state
+            const singleBtn = document.getElementById('packSingleBtn');
+            const familyBtn = document.getElementById('packFamilyBtn');
+            if (selectedPackKey === 'single') {
+                singleBtn.className = 'px-3 py-1 rounded-lg bg-[#c8a45d] text-[#1a3324] transition cursor-pointer';
+                familyBtn.className = 'px-3 py-1 rounded-lg text-[#d4af37] hover:text-white transition cursor-pointer';
+            } else {
+                familyBtn.className = 'px-3 py-1 rounded-lg bg-[#c8a45d] text-[#1a3324] transition cursor-pointer';
+                singleBtn.className = 'px-3 py-1 rounded-lg text-[#d4af37] hover:text-white transition cursor-pointer';
+            }
+        }
+
+        function startGame() {
+            sfx.init();
+            document.getElementById('startModal').classList.add('hidden');
+            document.getElementById('resultModal').classList.add('hidden');
+            document.getElementById('resultModal').classList.remove('flex');
+            document.getElementById('checkoutToast').classList.add('hidden');
+            document.getElementById('copyConfirmMsg').classList.add('hidden');
+
+            cavityDeck = buildCavityDeck();
+            state.status = 'PLAYING';
+            state.timeLeft = GAME_DURATION;
+            state.score = 0;
+            state.spawnedCount = 0;
+            state.killedCount = 0;
+            state.resolvedCount = 0;
+            state.combo = 1;
+            state.comboTimer = 0;
+            state.spawnCooldown = 0.35;
+            state.cavities = [];
+            state.particles = [];
+            state.floatingTexts = [];
+
+            setupMouthLayout();
+            state.teeth.forEach(t => {
+                t.health = 100;
+                t.shine = 1.0;
+            });
+
+            // Spawn initial 2 cavities right away
+            spawnNextCavity();
+            spawnNextCavity();
+            updateHUD();
+        }
+
+        function endGame(completedAll) {
+            if (state.status === 'ENDED') return;
+            state.status = 'ENDED';
+
+            const timeBonus = completedAll ? Math.round(state.timeLeft * 35) : 0;
+            const avgHealth = getAverageToothHealth();
+            const healthBonus = Math.round(avgHealth * 5);
+            const finalScore = state.score + timeBonus + healthBonus;
+
+            lastUnlockedDiscountPct = calculateDiscountFromScore(finalScore, state.killedCount);
+            sfx.playFanfare(state.killedCount >= 14);
+
+            // Populate Result Modal Header
+            const resTitle = document.getElementById('resultTitle');
+            const resSub = document.getElementById('resultSubtitle');
+            const resBadge = document.getElementById('resultBadge');
+
+            if (state.killedCount === MAX_CAVITIES) {
+                resBadge.textContent = `🏆 Maximum Eco-Care • ${lastUnlockedDiscountPct}% OFF Unlocked!`;
+                resTitle.textContent = 'A Cleaner Smile for a Greener Future!';
+                resSub.textContent = `Spotless! You eliminated all 20 cavities with the Bamboozii Signature Brush!`;
+            } else if (state.killedCount >= 12) {
+                resBadge.textContent = `🌿 Great Brushing • ${lastUnlockedDiscountPct}% OFF Unlocked!`;
+                resTitle.textContent = 'Natural Care, Lasting Smile!';
+                resSub.textContent = `You brushed away ${state.killedCount} of 20 cavities and unlocked a ${lastUnlockedDiscountPct}% Bamboozii discount!`;
+            } else {
+                resBadge.textContent = `🌱 Eco Starter Reward • ${lastUnlockedDiscountPct}% OFF Unlocked!`;
+                resTitle.textContent = 'Keep Brushing Naturally!';
+                resSub.textContent = `You cleared ${state.killedCount}/20 cavities! Claim your ${lastUnlockedDiscountPct}% discount or play again for 30% OFF!`;
+            }
+
+            document.getElementById('resCavities').textContent = `${state.killedCount} / ${MAX_CAVITIES}`;
+            document.getElementById('resCombatScore').textContent = state.score.toLocaleString();
+            document.getElementById('resBonuses').textContent = `+${(timeBonus + healthBonus).toLocaleString()}`;
+            document.getElementById('resTotalScore').textContent = finalScore.toLocaleString();
+
+            renderVoucherCardPricing();
+
+            const modal = document.getElementById('resultModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        document.getElementById('startGameBtn').addEventListener('click', startGame);
+        document.getElementById('playAgainBtn').addEventListener('click', startGame);
+
+        // Pack toggle buttons on reward modal
+        document.getElementById('packSingleBtn').addEventListener('click', () => {
+            selectedPackKey = 'single';
+            renderVoucherCardPricing();
+        });
+        document.getElementById('packFamilyBtn').addEventListener('click', () => {
+            selectedPackKey = 'family';
+            renderVoucherCardPricing();
+        });
+
+        // Copy Promo Code button (iframe-safe clipboard copy)
+        document.getElementById('copyCodeBtn').addEventListener('click', () => {
+            const codeText = document.getElementById('voucherCode').textContent;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = codeText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const confirmEl = document.getElementById('copyConfirmMsg');
+            confirmEl.classList.remove('hidden');
+            sfx.playSparkle();
+        });
+
+        // Claim Discount / Shop Now action
+        document.getElementById('claimOrderBtn').addEventListener('click', () => {
+            const pack = BASE_PRICES[selectedPackKey];
+            const finalPrice = Math.round(pack.mrp * (1 - lastUnlockedDiscountPct / 100));
+            const code = getPromoCodeForDiscount(lastUnlockedDiscountPct);
+
+            document.getElementById('toastPackName').textContent = pack.title;
+            document.getElementById('toastFinalPrice').textContent = `₹${finalPrice}`;
+            document.getElementById('toastCode').textContent = code;
+            document.getElementById('checkoutToast').classList.remove('hidden');
+            sfx.playSparkle();
+        });
+
+        document.getElementById('muteBtn').addEventListener('click', () => {
+            const isMuted = sfx.toggleMute();
+            document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🔊';
+        });
+
+        /**************************************************************
+         * UPDATE LOOP
+         **************************************************************/
+        let lastTimestamp = performance.now();
+
+        function update(dt) {
+            // Animate background bubbles
+            state.bgBubbles.forEach(b => {
+                b.y -= b.vy * dt;
+                b.wobble += dt * 2;
+                if (b.y + b.r < 0) {
+                    b.y = canvas.height + b.r;
+                    b.x = Math.random() * canvas.width;
+                }
+            });
+
+            // Decay toothbrush bristle flex
+            state.pointer.bristleFlex = Math.max(0, state.pointer.bristleFlex - dt * 4.5);
+            state.pointer.scrubAngle *= 0.9;
+
+            if (state.status === 'PLAYING') {
+                // Countdown timer
+                state.timeLeft = Math.max(0, state.timeLeft - dt);
+                hudTimerEl.textContent = `${state.timeLeft.toFixed(1)}s`;
+                if (state.timeLeft <= 8) {
+                    hudTimerEl.classList.add('timer-urgent');
+                } else {
+                    hudTimerEl.classList.remove('timer-urgent');
+                }
+
+                if (state.timeLeft <= 0) {
+                    endGame(false);
+                    return;
+                }
+
+                // Combo decay
+                if (state.comboTimer > 0) {
+                    state.comboTimer -= dt;
+                    if (state.comboTimer <= 0) {
+                        state.combo = 1;
+                        updateHUD();
+                    }
+                }
+
+                // Dynamic Cavity Spawner (up to 20 cavities max)
+                if (state.spawnedCount < MAX_CAVITIES) {
+                    state.spawnCooldown -= dt;
+                    const maxSimultaneous = state.spawnedCount < 6 ? 3 : 5;
+                    if (state.spawnCooldown <= 0 && state.cavities.length < maxSimultaneous) {
+                        spawnNextCavity();
+                        // Pace spawns so all 20 appear comfortably within ~28 seconds
+                        state.spawnCooldown = Math.max(0.55, 1.35 - (state.spawnedCount * 0.035));
+                    }
+                }
+
+                // Update active cavities
+                state.cavities.forEach(cav => {
+                    cav.scale = Math.min(1, cav.scale + dt * 5.5);
+                    cav.wobblePhase += dt * 6.5;
+                    cav.hitFlash = Math.max(0, cav.hitFlash - dt * 5);
+                    cav.hitCooldown = Math.max(0, cav.hitCooldown - dt);
+
+                    // Slowly stain/yellow the tooth it is attached to
+                    const tooth = state.teeth[cav.toothId];
+                    if (tooth) {
+                        tooth.health = Math.max(20, tooth.health - cav.type.stainRate * dt);
+                    }
+                });
+
+                // Update tooth shine animation
+                state.teeth.forEach(t => {
+                    if (t.shine > 0) t.shine = Math.max(0, t.shine - dt * 1.4);
+                });
+
+                updateHUD();
+            }
+
+            // Update foam & star particles
+            for (let i = state.particles.length - 1; i >= 0; i--) {
+                const p = state.particles[i];
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.vx *= 0.94;
+                p.vy *= 0.94;
+                p.life -= dt;
+                if (p.life <= 0) state.particles.splice(i, 1);
+            }
+
+            // Update floating score texts
+            for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
+                const ft = state.floatingTexts[i];
+                ft.y -= 42 * dt;
+                ft.life -= dt;
+                if (ft.life <= 0) state.floatingTexts.splice(i, 1);
+            }
+        }
+
+        /**************************************************************
+         * RENDERING ENGINE (MOUTH, TEETH, CAVITIES, BAMBOO BRUSH)
+         **************************************************************/
+        function drawRoundedRect(x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function drawMouthAndTeeth() {
+            const { cx, cy, rx, ry } = mouthMetrics;
+
+            ctx.save();
+
+            // Soft drop shadow behind mouth
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + 10, rx + 28, ry + 26, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(15, 118, 110, 0.14)';
+            ctx.fill();
+
+            // Outer Cheerful Lips
+            const lipGrad = ctx.createLinearGradient(cx, cy - ry - 25, cx, cy + ry + 25);
+            lipGrad.addColorStop(0, '#fb7185');
+            lipGrad.addColorStop(0.5, '#f43f5e');
+            lipGrad.addColorStop(1, '#e11d48');
+
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, rx + 22, ry + 20, 0, 0, Math.PI * 2);
+            ctx.fillStyle = lipGrad;
+            ctx.fill();
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#be123c';
+            ctx.stroke();
+
+            // Inner Mouth Cavity (Clip region)
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#4c0519';
+            ctx.fill();
+            ctx.clip();
+
+            // Cheerful Pink Tongue at Bottom of Mouth
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + ry * 0.55, rx * 0.68, ry * 0.56, 0, 0, Math.PI * 2);
+            const tongueGrad = ctx.createRadialGradient(cx, cy + ry * 0.35, 10, cx, cy + ry * 0.65, rx * 0.65);
+            tongueGrad.addColorStop(0, '#fda4af');
+            tongueGrad.addColorStop(1, '#e11d48');
+            ctx.fillStyle = tongueGrad;
+            ctx.fill();
+
+            // Upper & Lower Pink Gums
+            ctx.fillStyle = '#fb7185';
+            ctx.beginPath();
+            ctx.ellipse(cx, cy - ry * 0.88, rx * 1.05, ry * 0.55, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + ry * 0.88, rx * 1.05, ry * 0.55, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw the 16 Pearly White Teeth
+            state.teeth.forEach(t => {
+                ctx.save();
+                ctx.translate(t.x, t.y);
+
+                // Interpolate color between sparkling white (100%) and stained yellow-gray (20%)
+                const stainRatio = (100 - t.health) / 80; // 0 = clean, 1 = dirty
+                const r = Math.round(255 - stainRatio * 18);
+                const g = Math.round(255 - stainRatio * 34);
+                const b = Math.round(255 - stainRatio * 95);
+
+                const toothGrad = ctx.createLinearGradient(0, -t.h / 2, 0, t.h / 2);
+                if (t.row === 'upper') {
+                    toothGrad.addColorStop(0, `rgb(${r - 12}, ${g - 12}, ${b - 15})`);
+                    toothGrad.addColorStop(0.35, `rgb(${r}, ${g}, ${b})`);
+                    toothGrad.addColorStop(1, `rgb(${r - 5}, ${g - 5}, ${b - 8})`);
+                } else {
+                    toothGrad.addColorStop(0, `rgb(${r - 5}, ${g - 5}, ${b - 8})`);
+                    toothGrad.addColorStop(0.65, `rgb(${r}, ${g}, ${b})`);
+                    toothGrad.addColorStop(1, `rgb(${r - 12}, ${g - 12}, ${b - 15})`);
+                }
+
+                drawRoundedRect(-t.w / 2, -t.h / 2, t.w, t.h, 14);
+                ctx.fillStyle = toothGrad;
+                ctx.fill();
+
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = stainRatio > 0.35 ? '#ca8a04' : '#cbd5e1';
+                ctx.stroke();
+
+                // Glossy enamel highlight
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+                ctx.beginPath();
+                ctx.ellipse(-t.w * 0.2, -t.h * 0.18, t.w * 0.12, t.h * 0.24, -0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Twinkle star when freshly polished
+                if (t.shine > 0.05) {
+                    ctx.save();
+                    ctx.translate(t.w * 0.22, -t.h * 0.22);
+                    ctx.scale(t.shine, t.shine);
+                    ctx.fillStyle = '#2dd4bf';
+                    ctx.beginPath();
+                    for (let k = 0; k < 4; k++) {
+                        ctx.rotate(Math.PI / 2);
+                        ctx.moveTo(0, 0);
+                        ctx.quadraticCurveTo(2, 2, 0, 11);
+                        ctx.quadraticCurveTo(-2, 2, 0, 0);
+                    }
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                ctx.restore();
+            });
+
+            ctx.restore();
+        }
+
+        function drawCavities() {
+            state.cavities.forEach(cav => {
+                ctx.save();
+                const bounceY = Math.sin(cav.wobblePhase) * 3.5;
+                const squashX = 1 + Math.sin(cav.wobblePhase * 1.2) * 0.06;
+                const squashY = 1 - Math.sin(cav.wobblePhase * 1.2) * 0.06;
+
+                ctx.translate(cav.x, cav.y + bounceY);
+                ctx.scale(cav.scale * squashX, cav.scale * squashY);
+
+                const rad = cav.type.radius;
+
+                // Shadow on tooth
+                ctx.beginPath();
+                ctx.ellipse(0, rad * 0.78, rad * 0.75, rad * 0.28, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,0,0,0.22)';
+                ctx.fill();
+
+                // Spiky / Blobby Cavity Monster Body
+                ctx.beginPath();
+                const lobes = cav.type.id === 'sugar' ? 8 : (cav.type.id === 'acid' ? 6 : 10);
+                for (let i = 0; i <= lobes * 2; i++) {
+                    const ang = (i * Math.PI) / lobes;
+                    const rMod = i % 2 === 0 ? rad * 1.08 : rad * 0.84;
+                    const px = Math.cos(ang) * rMod;
+                    const py = Math.sin(ang) * rMod;
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.quadraticCurveTo(Math.cos(ang - 0.15) * (rad * 1.05), Math.sin(ang - 0.15) * (rad * 1.05), px, py);
+                }
+                ctx.closePath();
+
+                ctx.fillStyle = cav.hitFlash > 0 ? '#ffffff' : cav.type.color;
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = cav.type.darkColor;
+                ctx.stroke();
+
+                // Cute Mischievous Eyes
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(-rad * 0.3, -rad * 0.12, rad * 0.22, 0, Math.PI * 2);
+                ctx.arc(rad * 0.3, -rad * 0.12, rad * 0.22, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#1e1b4b';
+                ctx.beginPath();
+                ctx.arc(-rad * 0.28, -rad * 0.1, rad * 0.11, 0, Math.PI * 2);
+                ctx.arc(rad * 0.28, -rad * 0.1, rad * 0.11, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Angry Eyebrows
+                ctx.strokeStyle = cav.type.darkColor;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(-rad * 0.48, -rad * 0.34);
+                ctx.lineTo(-rad * 0.12, -rad * 0.24);
+                ctx.moveTo(rad * 0.48, -rad * 0.34);
+                ctx.lineTo(rad * 0.12, -rad * 0.24);
+                ctx.stroke();
+
+                // Little Chomp Mouth with Fang
+                ctx.fillStyle = '#4c0519';
+                ctx.beginPath();
+                ctx.arc(0, rad * 0.22, rad * 0.28, 0, Math.PI);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(-rad * 0.14, rad * 0.22);
+                ctx.lineTo(-rad * 0.05, rad * 0.38);
+                ctx.lineTo(rad * 0.04, rad * 0.22);
+                ctx.fill();
+
+                // Multi-hit Health Bar above tougher cavities (2HP or 3HP)
+                if (cav.maxHp > 1) {
+                    const barW = 38;
+                    const barH = 7;
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+                    drawRoundedRect(-barW / 2, -rad - 15, barW, barH, 3);
+                    ctx.fill();
+
+                    const pct = Math.max(0, cav.hp / cav.maxHp);
+                    ctx.fillStyle = pct > 0.5 ? '#4ade80' : '#facc15';
+                    drawRoundedRect(-barW / 2 + 1.5, -rad - 13.5, (barW - 3) * pct, barH - 3, 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            });
+        }
+
+        function drawParticlesAndPopups() {
+            // Foam bubbles & sparkles
+            state.particles.forEach(p => {
+                const alpha = Math.max(0, p.life / p.maxLife);
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.translate(p.x, p.y);
+
+                if (p.kind === 'star') {
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    for (let i = 0; i < 4; i++) {
+                        ctx.rotate(Math.PI / 2);
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(2.5, 2.5);
+                        ctx.lineTo(0, p.r * 1.4);
+                        ctx.lineTo(-2.5, 2.5);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    // Minty Foam Bubble
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = '#5eead4';
+                    ctx.stroke();
+
+                    // Tiny bubble shine dot
+                    ctx.beginPath();
+                    ctx.arc(-p.r * 0.3, -p.r * 0.3, p.r * 0.25, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+
+            // Floating score popups
+            state.floatingTexts.forEach(ft => {
+                const alpha = Math.max(0, ft.life / ft.maxLife);
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.font = `700 ${ft.size}px 'Fredoka', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#0f172a';
+                ctx.strokeText(ft.text, ft.x, ft.y);
+                ctx.fillStyle = ft.color;
+                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.restore();
+            });
+        }
+
+        function drawBambooToothbrush() {
+            const { x, y, scrubAngle, bristleFlex } = state.pointer;
+
+            ctx.save();
+            // Position Bamboozii bristle head directly at pointer (x, y)
+            ctx.translate(x, y);
+            ctx.rotate(-0.52 + scrubAngle);
+
+            const flexOffset = bristleFlex * 5;
+
+            // BAMBOOZII SIGNATURE DEEP FOREST GREEN BRISTLES (matches product photo)
+            const bristleCount = 8;
+            for (let i = 0; i < bristleCount; i++) {
+                const bx = -26 + i * 7;
+                ctx.fillStyle = i % 2 === 0 ? '#0f2e1e' : '#1b432c';
+                ctx.strokeStyle = '#091c12';
+                ctx.lineWidth = 1.3;
+                drawRoundedRect(bx + flexOffset * 0.4, -23 + flexOffset * 0.3, 5.5, 17 - flexOffset * 0.2, 2.5);
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // Herbal Mint Foam / Paste Glint on the Bristle Tips
+            ctx.beginPath();
+            ctx.moveTo(-21 + flexOffset * 0.5, -19);
+            ctx.bezierCurveTo(-10, -29, 12, -28, 21, -18);
+            ctx.bezierCurveTo(12, -14, -10, -14, -21 + flexOffset * 0.5, -19);
+            ctx.fillStyle = 'rgba(216, 243, 220, 0.9)';
+            ctx.fill();
+
+            // Sculpted Natural Bamboo Wood Handle & Neck
+            const handleGrad = ctx.createLinearGradient(0, -8, 0, 12);
+            handleGrad.addColorStop(0, '#e8c595');
+            handleGrad.addColorStop(0.5, '#d5a870');
+            handleGrad.addColorStop(1, '#a6763c');
+
+            ctx.fillStyle = handleGrad;
+            ctx.strokeStyle = '#6e471b';
+            ctx.lineWidth = 2.4;
+
+            // Tapered Brush Head
+            drawRoundedRect(-29, -8, 58, 14, 7);
+            ctx.fill();
+            ctx.stroke();
+
+            // Ergonomic Curved Bamboo Handle
+            drawRoundedRect(24, -6.5, 148, 13, 6.5);
+            ctx.fill();
+            ctx.stroke();
+
+            // Subtle Bamboo Wood Grain Lines
+            ctx.strokeStyle = 'rgba(110, 71, 27, 0.35)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(-15, -2);
+            ctx.lineTo(155, -2);
+            ctx.moveTo(10, 3);
+            ctx.lineTo(160, 3);
+            ctx.stroke();
+
+            // Engraved "Bamboozii" Script & Double-Leaf Emblem on the Handle
+            ctx.save();
+            ctx.fillStyle = '#5c3811';
+            ctx.font = '700 11px "Cormorant Garamond", Georgia, serif';
+            ctx.fillText('Bamboozii', 68, 3.5);
+
+            // Tiny Double Leaf next to Bamboozii engraving
+            ctx.strokeStyle = '#5c3811';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.ellipse(55, -1.5, 4, 2, -0.4, 0, Math.PI * 2);
+            ctx.ellipse(58, 2, 4, 2, 0.4, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        function render(now) {
+            const dt = Math.min(0.1, (now - lastTimestamp) / 1000);
+            lastTimestamp = now;
+
+            update(dt);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Ambient Background Floating Mint Bubbles
+            state.bgBubbles.forEach(b => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(b.x + Math.sin(b.wobble) * 12, b.y, b.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+                ctx.fill();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // 2. Cheerful Mouth & 16 Teeth Stage
+            drawMouthAndTeeth();
+
+            // 3. Attacking Cavity Monsters
+            drawCavities();
+
+            // 4. Toothpaste Foam, Sparkles & Score Popups
+            drawParticlesAndPopups();
+
+            // 5. Player's Bamboo Toothbrush Weapon
+            drawBambooToothbrush();
+
+            requestAnimationFrame(render);
+        }
+
+        // Start Everything on Window Load
+        window.onload = function () {
+            setupMouthLayout();
+            updateHUD();
+            requestAnimationFrame(render);
+        };
+    </script>
+</body>
+</html>
